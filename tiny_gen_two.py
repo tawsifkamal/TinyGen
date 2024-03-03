@@ -7,14 +7,21 @@ from github_file_loader import GithubFileLoader
 from utils import get_file
 from typing import List
 from db import insert_to_supabase
+from utils import get_file
+from db import insert_to_supabase
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+ACCESS_TOKEN = os.getenv('OPENAI_API_KEY')
 
 
 
 
 class TinyGenTwo:
     def __init__(self):
-        self.llm = ChatOpenAI(model_name="gpt-4-0125-preview", max_tokens=4096, temperature=0, streaming=True)
-        self.llm_gpt_3 = ChatOpenAI(model_name="gpt-3.5-turbo-0125", max_tokens=4096)
+        self.llm = ChatOpenAI(model_name="gpt-4-0125-preview", max_tokens=4096, temperature=0, streaming=True, openai_api_key=ACCESS_TOKEN)
+        self.llm_gpt_3 = ChatOpenAI(model_name="gpt-3.5-turbo-0125", max_tokens=4096, openai_api_key=ACCESS_TOKEN)
 
     def call(self, repoUrl, prompt):
         # Load files

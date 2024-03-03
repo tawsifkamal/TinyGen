@@ -6,9 +6,15 @@ from github_file_loader import GithubFileLoader
 from utils import get_file
 from db import insert_to_supabase
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+ACCESS_TOKEN = os.getenv('OPENAI_API_KEY')
+
 class TinyGenOne:
     def __init__(self):
-        self.llm = ChatOpenAI(model_name="gpt-4-0125-preview", max_tokens=4096, temperature=0, streaming=True)
+        self.llm = ChatOpenAI(model_name="gpt-4-0125-preview", max_tokens=4096, temperature=0, streaming=True, openai_api_key=ACCESS_TOKEN)
    
 
     def call(self, repoUrl, prompt):
