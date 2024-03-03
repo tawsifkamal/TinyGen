@@ -1,11 +1,10 @@
 {
   "functions": {
-    "api.py": {
-      "maxDuration": 300,
-      "runtime": "@vercel/python"
+    "api/api.py": {
+      "maxDuration": 300
     }
   },
-  "routes": [
+  "rewrites": [
     {
       "src": "/(.*)",
       "dest": "api.py"

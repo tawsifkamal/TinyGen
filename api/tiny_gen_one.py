@@ -2,9 +2,9 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
-from github_file_loader import GithubFileLoader
-from utils import get_file
-from db import insert_to_supabase
+from api.github_file_loader import GithubFileLoader
+from api.utils import get_file
+from api.db import insert_to_supabase
 
 from dotenv import load_dotenv
 import os

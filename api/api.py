@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-from tiny_gen_one import TinyGenOne
-from tiny_gen_two import TinyGenTwo
-from db import fetch_all_calls
+from api.tiny_gen_one import TinyGenOne
+from api.tiny_gen_two import TinyGenTwo
+from api.db import fetch_all_calls
 
 app = FastAPI()
 

@@ -3,14 +3,16 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.output_parsers import JsonOutputParser
-from github_file_loader import GithubFileLoader
-from utils import get_file
-from typing import List
-from db import insert_to_supabase
-from utils import get_file
-from db import insert_to_supabase
+
+from api.db import insert_to_supabase
+from api.utils import get_file
+from api.utils import get_file
+from api.db import insert_to_supabase
+from api.github_file_loader import GithubFileLoader
+
 from dotenv import load_dotenv
 import os
+from typing import List
 
 load_dotenv()
 ACCESS_TOKEN = os.getenv('OPENAI_API_KEY')
