@@ -3,5 +3,11 @@
     "api/api.py": {
       "maxDuration": 300
     }
-  }
+  },
+  "rewrites": [
+    {
+      "src": "/(.*)",
+      "dest": "api/api.py"
+    }
+  ]
 }
