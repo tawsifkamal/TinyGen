@@ -6,7 +6,7 @@
   },
   "rewrites": [
     {
-      "src": "/(.*)",
+      "source": "/(.*)",
       "dest": "api/api.py"
     }
   ]
