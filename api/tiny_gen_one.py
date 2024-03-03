@@ -24,15 +24,22 @@ class TinyGenOne:
         self.repo_files = loader.load()
         self.prompt = prompt
 
+        yield (str(self.repo_files))
+
         # Initialize the chains (three chains = code conversion -> generate diff -> reflection on diff)
         tiny_gen_chain = self.initialize_and_combine_chains(self.repo_files, self.prompt)
+
+        yield (str(tiny_gen_chain))
+
+        yield "brhuhsdvsvsssdvdv"
 
         response = tiny_gen_chain.invoke({"repository": self.repo_files, "user_query": self.prompt})
 
         # Insert Data to supabase
         insert_to_supabase(prompt, repoUrl, response, "tiny_gen_one_calls")
 
-        return response
+        yield (response)
+        
 
     def transform_chain_output(self, code_changes):
         

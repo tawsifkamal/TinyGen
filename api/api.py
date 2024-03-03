@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from api.tiny_gen_one import TinyGenOne
 from api.tiny_gen_two import TinyGenTwo
 from api.db import fetch_all_calls
+from sse_starlette import EventSourceResponse
+import asyncio
+import json
 
 app = FastAPI()
 
@@ -18,7 +21,7 @@ async def create_diff(tiny_gen_input: TinyGenInput):
 
     tiny_gen_one = TinyGenOne()
     response = tiny_gen_one.call(repoUrl=repo_url, prompt=prompt)
-    return response
+    return StreamingResponse(response, media_type='text/event-stream')
 
 
 @app.post("/tiny_gen_two/call")
@@ -29,7 +32,6 @@ async def create_diff(tiny_gen_input: TinyGenInput):
     tiny_gen_two = TinyGenTwo()
     response = tiny_gen_two.call(repoUrl=repo_url, prompt=prompt)
     return response
-
 
 @app.get("/tiny_gen_one/get_past_calls")
 async def fetch_data():
@@ -45,4 +47,18 @@ async def fetch_data():
 
 
 
+async def gen():
+    yield "yo"
+    yield "yo"
+    await asyncio.sleep(2)
+    yield "yo"
+    await asyncio.sleep(1)
+    
+    yield "bruhhh"
 
+
+
+
+@app.get("/test")
+async def main():
+    return StreamingResponse(gen(), media_type='text/event-stream')
