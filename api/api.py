@@ -4,9 +4,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from api.tiny_gen_one import TinyGenOne
 from api.tiny_gen_two import TinyGenTwo
 from api.db import fetch_all_calls
-from sse_starlette import EventSourceResponse
 import asyncio
-import json
 
 app = FastAPI()
 
