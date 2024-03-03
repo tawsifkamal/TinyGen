@@ -2,3 +2,4 @@
 venv/
 .vercel
 __pycache__/
+cmd_to_build.txt
