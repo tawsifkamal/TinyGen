@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 from tiny_gen_one import TinyGenOne
 from tiny_gen_two import TinyGenTwo
 from db import fetch_all_calls
@@ -32,12 +33,15 @@ async def create_diff(tiny_gen_input: TinyGenInput):
 
 @app.get("/tiny_gen_one/get_past_calls")
 async def fetch_data():
-    fetch_all_calls("tiny_gen_one_calls")
+    return JSONResponse(fetch_all_calls("tiny_gen_one_calls"))
 
 
 @app.get("/tiny_gen_two/get_past_calls")
 async def fetch_data():
-    fetch_all_calls("tiny_gen_two_calls")
+    res = fetch_all_calls("tiny_gen_two_calls")
+    print(res)
+    print(type(res))
+    return JSONResponse(res)
 
 
 

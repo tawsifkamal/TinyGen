@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import json
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ supabase: Client = create_client(url, key)
 
 def insert_to_supabase(prompt, repoUrl, response, tinygen_table_name):
     try:
-        data, count = supabase.table(tinygen_table_name).insert({"prompt": prompt, "repoUrl": repoUrl, "response": response}).execute()
+        supabase.table(tinygen_table_name).insert({"prompt": prompt, "repoUrl": repoUrl, "response": response}).execute()
         return "success!"
     except:
         return "error"
@@ -19,4 +20,4 @@ def insert_to_supabase(prompt, repoUrl, response, tinygen_table_name):
 
 def fetch_all_calls(tinygen_table_name):
     response = supabase.table(tinygen_table_name).select("*").execute()
-    return response.json()
+    return json.loads(response.model_dump_json())
