@@ -1,12 +1,9 @@
 {
-  "builds": [
-    {
-      "src": "api.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "maxDuration": 300 },
-      "maxDuration": 300
+  "functions": {
+    "api.py": {
+        "maxDuration": 300
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
