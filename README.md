@@ -82,6 +82,8 @@ Otherwise, feel free to call the APIs yourself using your preferred API client. 
 If using local API, base_url = ```http://localhost:8000```
 
 If using prod API, base_url = ```https://tiny-gen-zbkbev3qaq-uc.a.run.app```
+
+Tip! The docs for the API is located at the root endpoint ```/```
 ## Call TinyGen
 
 **Call TinyGen 1.0**
@@ -103,5 +105,10 @@ If using prod API, base_url = ```https://tiny-gen-zbkbev3qaq-uc.a.run.app```
 ```GET /tiny_gen_one/get_past_calls``` 
 
 **Fetch Past TinyGen 2.0 Calls From Supabase**
+
+```GET /tiny_gen_two/get_past_calls``` 
+
+## Docs
+**Get API Docs**
 
 ```GET /tiny_gen_two/get_past_calls``` 
