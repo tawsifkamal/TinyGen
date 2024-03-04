@@ -20,6 +20,7 @@ st.sidebar.page_link('https://github.com/tawsifkamal/TinyGen', label=':blue[GitH
 
 
 st.title('🤖 TinyGen')
+st.video("https://www.youtube.com/watch?v=aAXo5XXDPgE")
 st.write("""
 TinyGen is an LLM Agent that is able to suggest :red[***code changes***] for you in a :red[***GitHub Repository***] of your choice!
          
@@ -29,6 +30,8 @@ the *magic* happen!
 What is the *magic* you may ask? TinyGen will locate the :green[***exact code***] in the repository that addresses your prompt
 and it will generate a :green[***unified diff***] showing the changes that need to be made.     
 """)
+
+
 
 def call_tiny_gen(repoUrl, prompt, model_name="TinyGen 1.0"):
     output_placeholder = st.empty()  # Create a placeholder for output
