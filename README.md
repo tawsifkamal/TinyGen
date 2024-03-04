@@ -1,6 +1,12 @@
 
 # Welcome To The TinyGen Repo!
 
+### What is TinyGen?
+https://www.loom.com/share/fea73acba34948c09b7e7960dc1d1cd1
+
+### Calling TinyGen Through The Production API
+https://www.loom.com/share/81cad00f51b04b1ab823cb3f58fda866
+
 ## Useful Links
 
 - [TinyGen UI](https://tiny-gen.streamlit.app/)
