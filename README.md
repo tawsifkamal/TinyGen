@@ -14,7 +14,12 @@ https://www.loom.com/share/81cad00f51b04b1ab823cb3f58fda866
 - [Public Postman Collection To Interact With API](https://www.postman.com/red-water-664033/workspace/tinygen/documentation/17857495-f27f8dae-edd0-4a36-8382-809507a65587)
 - [TinyGen Project Overview](https://tawsifkamal.notion.site/TinyGen-3bc759c6254a4e33ad7f7fac86d97c0b?pvs=74)
 
-
+## Stack
+- Python
+- FastAPI
+- Google Cloud Run (API Deployment)
+- Streamlit & Streamlit Cloud (Frontend + Deployment)
+- Supabase (LLM Call Storage)
 
 ## Development
 
@@ -75,8 +80,11 @@ uvicorn api.api:app --reload
 
 9. Open another terminal and start the streamlit frontend
 ```
-streamlit run frontend/TinyGen.py
+streamlit run frontend/🤖_TinyGen.py
 ```
+
+I know it's a bit wierd to have a funky emoji for a file name. But that's how Streamlit chose to do its user design.🤷🏽‍♂️
+Please let me know if you do have any problems with running the file!
 
 # Making API Calls Directly
 The following endpoints are available when making api calls. A public workspace on postman is linked [here](https://elements.getpostman.com/redirect?entityId=17857495-f27f8dae-edd0-4a36-8382-809507a65587&entityType=collection)
