@@ -6,6 +6,7 @@
 
 ### Calling TinyGen Through The Production API
 https://www.loom.com/share/81cad00f51b04b1ab823cb3f58fda866
+*Edit: Streaming is implemented! Use it through the Streamlit UI or find the endpoints on the API documentation page*
 
 ## Useful Links
 
@@ -13,7 +14,7 @@ https://www.loom.com/share/81cad00f51b04b1ab823cb3f58fda866
 - [Production API Base Url](https://tiny-gen-zbkbev3qaq-uc.a.run.app)
 - [Public Postman Collection To Interact With API](https://www.postman.com/red-water-664033/workspace/tinygen/documentation/17857495-f27f8dae-edd0-4a36-8382-809507a65587)
 - [TinyGen Project Overview](https://tawsifkamal.notion.site/TinyGen-3bc759c6254a4e33ad7f7fac86d97c0b?pvs=74)
-*Edit: Streaming is implemented! Use it through the Streamlit UI or find the endpoints on the API documentation page*
+
 ## Stack
 - Python
 - FastAPI
