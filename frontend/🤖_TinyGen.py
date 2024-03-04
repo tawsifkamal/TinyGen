@@ -20,7 +20,16 @@ st.sidebar.page_link('https://github.com/tawsifkamal/TinyGen', label=':blue[GitH
 
 
 st.title('🤖 TinyGen')
-st.video("https://www.youtube.com/watch?v=aAXo5XXDPgE")
+
+# Custom HTML to embed a YouTube video with specific aspect ratio
+video_html = f"""
+    <div style='position:relative; padding-bottom:56.25%; height:0; overflow:hidden;'>
+        <iframe src='https://www.youtube.com/embed/aAXo5XXDPgE' frameborder='0' style='position:absolute; top:0; left:0; width:100%; height:100%;' allowfullscreen></iframe>
+    </div>
+"""
+
+st.markdown(video_html, unsafe_allow_html=True)
+
 st.write("""
 TinyGen is an LLM Agent that is able to suggest :red[***code changes***] for you in a :red[***GitHub Repository***] of your choice!
          
