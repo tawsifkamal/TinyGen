@@ -4,8 +4,10 @@
 ## Useful Links
 
 - [TinyGen UI](https://tiny-gen.streamlit.app/)
-- [TinyGen Project Overview](https://tawsifkamal.notion.site/TinyGen-3bc759c6254a4e33ad7f7fac86d97c0b?pvs=74)
 - [Production API Base Url](https://tiny-gen-zbkbev3qaq-uc.a.run.app)
+- [Public Postman Collection To Interact With API](https://www.postman.com/red-water-664033/workspace/tinygen/documentation/17857495-f27f8dae-edd0-4a36-8382-809507a65587)
+- [TinyGen Project Overview](https://tawsifkamal.notion.site/TinyGen-3bc759c6254a4e33ad7f7fac86d97c0b?pvs=74)
+
 
 
 ## Development
