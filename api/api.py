@@ -5,7 +5,7 @@ from api.tiny_gen_one import TinyGenOne
 from api.tiny_gen_two import TinyGenTwo
 from api.db import fetch_all_calls
 
-app = FastAPI()
+app = FastAPI(docs_url="/")
 
 class TinyGenInput(BaseModel):
     prompt: str
