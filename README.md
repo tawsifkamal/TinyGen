@@ -6,7 +6,8 @@
 
 ### Calling TinyGen Through The Production API
 https://www.loom.com/share/81cad00f51b04b1ab823cb3f58fda866
-*Edit: Streaming is implemented! Use it through the Streamlit UI or find the endpoints on the API documentation page*
+
+*Edit: Streaming is now implemented! Use it through the Streamlit UI or find the endpoints on the API documentation page*
 
 ## Useful Links
 
