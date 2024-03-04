@@ -1,5 +1,5 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from api.github_file_loader import GithubFileLoader
@@ -34,6 +34,50 @@ class TinyGenOne:
         insert_to_supabase(prompt, repoUrl, response, "tiny_gen_one_calls")
 
         return response
+
+    async def stream(self, repoUrl, prompt):
+
+        loader = GithubFileLoader(repo_url=repoUrl)
+
+        yield "Processing files...\n"
+        files_generator = loader.load_stream()
+        self.repo_files = []
+        for file in files_generator:
+            self.repo_files.append(file)
+            if len(self.repo_files) < 6:
+                yield "File Name: " + file['file_path'] + "\n"
+            elif len(self.repo_files) == 6:
+                yield "Processing the rest... please wait.\n"
+        yield "Done processing files!\n\n"
+        self.prompt = prompt
+
+    
+
+        # Initialize the chains (three chains = code conversion -> generate diff -> reflection on diff)
+        tiny_gen_chain = self.initialize_and_combine_chains(self.repo_files, self.prompt)
+
+
+        response = tiny_gen_chain.astream_events(
+            {"repository": self.repo_files, "user_query": self.prompt},
+            version="v1",
+            include_types=["chat_model"]
+        )
+
+        async for event in response:
+            kind = event['event']
+            chain = event["name"]
+
+            if kind == "on_chat_model_stream":
+                yield str(event['data']['chunk'].content)
+            elif kind == "on_chat_model_start" and chain == "code_conversion_chain":
+                yield str("##### Starting Code Conversion Chain...\n\n")
+            elif kind == "on_chat_model_start" and chain == "generate_diff_chain":
+                yield str("\n\n##### Starting Generate Diff Chain...\n\n")
+            elif kind == "on_chat_model_start" and chain == "reflection_chain":
+                yield str("\n\n##### Starting Reflection Chain...\n\n")
+        
+        # Insert Data to supabase after all streaming is finished!
+        insert_to_supabase(prompt, repoUrl, response, "tiny_gen_one_calls")
 
 
     def transform_chain_output(self, code_changes):
@@ -81,7 +125,7 @@ class TinyGenOne:
         )
         code_conversion_chain = (
             code_conversion_prompt
-            | self.llm
+            | self.llm.with_config({"run_name": "code_conversion_chain"}) 
             | JsonOutputParser()
         )
 
@@ -96,7 +140,8 @@ class TinyGenOne:
 
             Generate the unified diff for the changes that were made!
 
-            Return only the diff and nothing else
+            Return only the diff and nothing else.
+
 
             <original_file>
             {original_file}
@@ -110,7 +155,7 @@ class TinyGenOne:
         )
         generate_diff_chain = (
             generate_diff_prompt
-            | self.llm
+            | self.llm.with_config({"run_name": "generate_diff_chain"}) 
             | StrOutputParser()
         )
 
@@ -147,7 +192,7 @@ class TinyGenOne:
         )
         reflection_chain = (
             reflection_prompt 
-            | self.llm 
+            | self.llm.with_config({"run_name": "reflection_chain"}) 
             | StrOutputParser()
         )
 
@@ -155,7 +200,7 @@ class TinyGenOne:
 
         tiny_gen_chain = (
             code_conversion_chain
-            | RunnableLambda(self.transform_chain_output)
+            | self.transform_chain_output
             | RunnablePassthrough.assign(
                 diff=generate_diff_chain,
                 user_query=lambda x: prompt

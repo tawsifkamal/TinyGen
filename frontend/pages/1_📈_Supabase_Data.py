@@ -3,15 +3,18 @@ import requests
 import pandas as pd
 
 # Set page config
-st.set_page_config(page_title="Data", page_icon="📈")
+st.set_page_config(page_title="Supabase Data", page_icon="📈")
 # Add a link to the sidebar
-st.sidebar.markdown('[Learn More About Tiny Gen](https://tawsifkamal.notion.site/Tiny-Gen-3bc759c6254a4e33ad7f7fac86d97c0b?pvs=4)', unsafe_allow_html=True)
+# Add a link to the sidebar
+st.sidebar.header("Additional Resources")
+st.sidebar.page_link('https://tawsifkamal.notion.site/Tiny-Gen-3bc759c6254a4e33ad7f7fac86d97c0b?pvs=4)', label=":blue[Learn More About TinyGen]", icon = "🤔")
+st.sidebar.page_link('https://github.com/tawsifkamal/TinyGen', label=':blue[GitHub]', icon='↗️')
 
 # Main page title
-st.title('📈 Tiny Gen Past Calls')
+st.title('📈 TinyGen: Supabase Data')
 st.write("""
-         This page shows all of the past calls to TinyGen 1.0 and TinyGen 2.0. Each time a model is invoked,
-         the `repoUrl`, `prompt`, and `response` of the TinyGen are stored in a database for the corresponding model.
+         This page shows all of the past calls to TinyGen 1.0 and TinyGen 2.0. Each time TinyGen Agent is invoked,
+         the `repoUrl`, `prompt`, and `response` of the TinyGen are stored in a :red[***Supabase database***] for the corresponding model.
          This page calls the API endpoints that return all of the data.
          Below, you can inspect the data for all of the calls in a tabular format.
          """)

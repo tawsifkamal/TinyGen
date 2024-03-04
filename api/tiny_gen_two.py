@@ -4,6 +4,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.output_parsers import JsonOutputParser
 
+
 from api.db import insert_to_supabase
 from api.utils import get_file
 from api.utils import get_file
@@ -43,6 +44,57 @@ class TinyGenTwo:
 
         return response
     
+    async def stream(self, repoUrl, prompt):
+
+        loader = GithubFileLoader(repo_url=repoUrl)
+
+        yield "Processing files...\n"
+        files_generator = loader.load_stream()
+        self.repo_files = []
+        for file in files_generator:
+            self.repo_files.append(file)
+            if len(self.repo_files) < 6:
+                yield "File Name: " + file['file_path'] + "\n"
+            elif len(self.repo_files) == 6:
+                yield "Processing the rest... please wait.\n"
+        yield "Done processing files!\n\n"
+        self.prompt = prompt
+
+        # summarize files
+        yield f'Summarizing files...\nMaking a batch call to summarize file chain for {len(self.repo_files)} files...\n'
+        self.repo_files_with_summaries = self.summarize_files(self.repo_files)
+        yield "Done summarizing all files!\n\n"
+
+    
+        # Initialize rest of the chains 
+        # Four Chain = identify relevant files -> code conversion -> generate diff -> reflection on diff)
+        tiny_gen_chain = self.initialize_and_combine_chains(self.repo_files, self.prompt)
+
+
+        response = tiny_gen_chain.astream_events(
+            {"files_list": self.repo_files_with_summaries, "user_query": self.prompt},
+            version="v1",
+            include_types=["chat_model"]
+        )
+
+        async for event in response:
+            kind = event['event']
+            chain = event["name"]
+
+            if kind == "on_chat_model_stream":
+                yield str(event['data']['chunk'].content)
+            elif kind == "on_chat_model_start" and chain == "identify_relevant_files_chain":
+                yield str("##### Starting Identify Relevant Files Chain...\n\n")
+            elif kind == "on_chat_model_start" and chain == "code_conversion_chain":
+                yield str("##### Starting Code Conversion Chain...\n\n")
+            elif kind == "on_chat_model_start" and chain == "generate_diff_chain":
+                yield str("\n\n##### Starting Generate Diff Chain...\n\n")
+            elif kind == "on_chat_model_start" and chain == "reflection_chain":
+                yield str("\n\n##### Starting Reflection Chain...\n\n")
+        
+        # Insert Data to supabase after all streaming is finished!
+        insert_to_supabase(prompt, repoUrl, response, "tiny_gen_one_calls")
+    
     def summarize_files(self, repo_files):
         ############ 
         # 1. Summary Chain: summarize all files 
@@ -71,7 +123,6 @@ class TinyGenTwo:
             summary_chain.map()
             | self.transform_summary_chain_output
         )       
-
         
         return summarize_files.invoke(repo_files)
 
@@ -83,17 +134,14 @@ class TinyGenTwo:
 
         return files_with_summaries
 
-    def transform_relevant_files_chain_output(self, relevant_file_paths: List[str]):
-        relevant_files = get_file(relevant_file_paths, self.repo_files)
+    def transform_relevant_files_chain_output(self, relevant_file_paths: dict[str, List]):
+        relevant_files = get_file(relevant_file_paths["files"], self.repo_files)
         return relevant_files
 
-    def transform_conversion_chain_output(self, code_changes):
-        if isinstance(code_changes, dict):
-            code_changes = [code_changes]
-        
+    def transform_conversion_chain_output(self, code_changes: dict[str, List]): 
         original_files = []
-        
-        for code_change in code_changes:
+     
+        for code_change in code_changes["code_changes"]:
             original_file_path = code_change["original_file_path"]
             original_file = get_file(original_file_path, self.repo_files)
             original_files.append({"file_path": original_file_path, "contents": original_file})
@@ -125,13 +173,16 @@ class TinyGenTwo:
             without any comments or explanation, like this:
 
             ```json
-            [path/to/file, path/to/file]
+            {{"files": [path/to/file, path/to/file]}}
             ```
             """
         )
 
-        identify_relevant_files_chain = identify_relevant_files_prompt | self.llm | JsonOutputParser()
-
+        identify_relevant_files_chain = (
+            identify_relevant_files_prompt 
+            | self.llm.with_config({"run_name": "identify_relevant_files_chain"})  
+            | JsonOutputParser()
+        )
         ############ 
         # 3. Code Conversion Chain: Given all of the files, generate the code that would fix the user's issue in the file
         ############
@@ -155,28 +206,31 @@ class TinyGenTwo:
 
             Return the name of the file(s) that was updated,
             and also the updated file in a json format like this:
-
-            [
-                {{
-                    "original_file_path: path of original file
-                    "new_file_path": path of the new file,
-                    "updated_contents": new_file_contents,
-                    "what_changed": simple description of what was added
-                }},
             {{
-                    "original_file_path: path of original file
-                    "new_file_path": path of the new file,
-                    "updated_contents": new_file_contents,
-                    "what_changed": simple description of what was added
-                }}
-            ]
+                "code_changes": [
+                    {{
+                        "original_file_path: path of original file
+                        "new_file_path": path of the new file,
+                        "updated_contents": new_file_contents,
+                        "what_changed": simple description of what was added
+                    }},
+                    {{
+                        "original_file_path: path of original file
+                        "new_file_path": path of the new file,
+                        "updated_contents": new_file_contents,
+                        "what_changed": simple description of what was added
+                    }}
+                ]
+            }}
+            
+           
 
             Important: Return only the json and no other text! Make sure to escape any string literals so that the json is valid!
             """
         )
         code_conversion_chain = (
             code_conversion_prompt
-            | self.llm
+            | self.llm.with_config({"run_name": "code_conversion_chain"}) 
             | JsonOutputParser()
         )
 
@@ -204,7 +258,7 @@ class TinyGenTwo:
         )
         generate_diff_chain = (
             generate_diff_prompt
-            | self.llm
+            | self.llm.with_config({"run_name": "generate_diff_chain"}) 
             | StrOutputParser()
         )
 
@@ -241,12 +295,12 @@ class TinyGenTwo:
         )
         reflection_chain = (
             reflection_prompt 
-            | self.llm 
+            | self.llm.with_config({"run_name": "reflection_chain"}) 
             | StrOutputParser()
         )
 
         identify_relevant_files = (
-            identify_relevant_files_chain 
+            identify_relevant_files_chain
             | self.transform_relevant_files_chain_output
         )
 

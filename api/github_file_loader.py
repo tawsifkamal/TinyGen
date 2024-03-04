@@ -13,7 +13,7 @@ class GithubFileLoader:
     github_api_url = "https://api.github.com"
     rate_limit_url = "https://api.github.com/rate_limit"
 
-    excluded_dirs = {'node_modules', ".git"}  # Directories to exclude loading
+    excluded_dirs = {'node_modules', ".git", ".vscode", "__pycache__"}  # Directories to exclude loading
     excluded_files = {'poetry.lock', 'yarn.lock', 'package-lock.json'}  # Files to exclude loading
 
     @property
@@ -87,7 +87,16 @@ class GithubFileLoader:
             content = self.get_file_content_by_path(file["path"])
             documents.append({"file_path": file["path"], "contents": content})
 
-        rate_limit = requests.get(self.rate_limit_url, headers=self.headers).json()
-        print("CURRENT RATE LIMIT FOR GITHUB API CALLS >>>>>>>>>>> " + str(rate_limit))
 
         return documents
+
+    def load_stream(self):
+        files = self.get_file_paths()
+        for file in files:
+         
+            ## If node_modules (folder), package-lock.json, yarn.lock, etc, then don't process
+            if self.is_file_in_excluded_files(file):
+                continue
+
+            content = self.get_file_content_by_path(file["path"])
+            yield {"file_path": file["path"], "contents": content}
