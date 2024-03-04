@@ -24,7 +24,8 @@ ACCESS_TOKEN = os.getenv('OPENAI_API_KEY')
 class TinyGenTwo:
     def __init__(self):
         self.llm = ChatOpenAI(model_name="gpt-4-0125-preview", max_tokens=4096, temperature=0, streaming=True, openai_api_key=ACCESS_TOKEN)
-        self.llm_gpt_3 = ChatOpenAI(model_name="gpt-3.5-turbo-0125", max_tokens=4096, openai_api_key=ACCESS_TOKEN)
+        # USE BELOW FOR SAVING COST
+        # self.llm_gpt_3 = ChatOpenAI(model_name="gpt-3.5-turbo-0125", max_tokens=4096, openai_api_key=ACCESS_TOKEN) 
 
     def call(self, repoUrl, prompt):
         # Load files
@@ -117,7 +118,7 @@ class TinyGenTwo:
             without additional questions.
             """
         )
-        summary_chain = summarize_prompt | self.llm_gpt_3 | StrOutputParser()
+        summary_chain = summarize_prompt | self.llm | StrOutputParser() # CURRENTLY USING GPT-4-Turbo for summaries! (Reason: 400K Tokens Per Minute allowed)
 
         summarize_files = (
             summary_chain.map()
