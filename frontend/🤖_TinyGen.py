@@ -2,6 +2,12 @@ import streamlit as st
 import requests
 from ui_data import test_choices
 
+
+
+#### FEEL FREE TO CHANGE THIS IF YOU WOULD LIKE TO TEST THE FAST API SERVER LOCALLY ($ uvicorn api.api:app --reload)
+api_endpoint = "https://tiny-gen-zbkbev3qaq-uc.a.run.app/"
+# api_endpoint = "http://localhost:8000/"
+
 st.set_page_config(
     page_title="TinyGen",
     page_icon="🤖",
@@ -29,7 +35,7 @@ def call_tiny_gen(repoUrl, prompt, model_name="TinyGen 1.0"):
     full_output_text = ""  # Initialize an empty string to accumulate the output
     model_mapping = {"TinyGen 1.0": "tiny_gen_one", "TinyGen 2.0": "tiny_gen_two"}
     # Start the request
-    with requests.post(f'http://localhost:8000/{model_mapping[model_name]}/stream', json={"repoUrl": repoUrl, "prompt": prompt}, stream=True) as r:
+    with requests.post(f'{api_endpoint}{model_mapping[model_name]}/stream', json={"repoUrl": repoUrl, "prompt": prompt}, stream=True) as r:
         # Check the status code before proceeding
         if r.status_code == 200:
             with st.spinner(f'{model_name} doing its magic...'):

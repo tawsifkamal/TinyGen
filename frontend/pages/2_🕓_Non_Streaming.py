@@ -2,6 +2,14 @@ import streamlit as st
 import requests
 from ui_data import test_choices
 
+
+
+
+#### FEEL FREE TO CHANGE THIS IF YOU WOULD LIKE TO TEST THE FAST API SERVER LOCALLY ($ uvicorn api.api:app --reload)
+api_endpoint = "https://tiny-gen-zbkbev3qaq-uc.a.run.app/"
+# api_endpoint = "http://localhost:8000/"
+
+
 st.set_page_config(
     page_title="TinyGen",
     page_icon="🤖",
@@ -30,9 +38,9 @@ and it will generate a :green[***unified diff***] showing the changes that need 
 def call_tiny_gen(repoUrl, prompt, model_name = "TinyGen 1.0"):
     with st.spinner(f'Calling {model_name}... Please wait.'):
         if model_name == "TinyGen 1.0":
-            res = requests.post("https://tiny-gen-zbkbev3qaq-uc.a.run.app/tiny_gen_one/call", json={"repoUrl": repoUrl, "prompt": prompt})
+            res = requests.post(f"{api_endpoint}tiny_gen_one/call", json={"repoUrl": repoUrl, "prompt": prompt})
         else:
-            res = requests.post("https://tiny-gen-zbkbev3qaq-uc.a.run.app/tiny_gen_two/call", json={"repoUrl": repoUrl, "prompt": prompt})
+            res = requests.post(f"{api_endpoint}tiny_gen_two/call", json={"repoUrl": repoUrl, "prompt": prompt})
 
         # It's a good idea to check if the request was successful
     if res.status_code == 200:
